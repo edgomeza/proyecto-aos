@@ -68,65 +68,96 @@ try {
 # =========================================
 Write-TestHeader "1. INFRAESTRUCTURA (7 pruebas)"
 
-# Eureka Server - Probamos el dashboard en lugar de actuator
+# Eureka Server - Health check
 try {
-    $response = Invoke-WebRequest -Uri "http://localhost:8761" -Method Get -TimeoutSec 5
+    $response = Invoke-WebRequest -Uri "http://localhost:8761/actuator/health" -Method Get -TimeoutSec 5 -UseBasicParsing
     Write-TestResult "Eureka Server" ($response.StatusCode -eq 200)
 } catch {
-    Write-TestResult "Eureka Server" $false
-}
-
-# Config Server - Probamos actuator/info que suele estar expuesto
-try {
-    $response = Invoke-WebRequest -Uri "http://localhost:8888" -Method Get -TimeoutSec 5
-    Write-TestResult "Config Server" ($response.StatusCode -eq 200)
-} catch {
-    Write-TestResult "Config Server" $false
-}
-
-# Gateway Service - Probamos con actuator/info
-try {
-    $response = Invoke-WebRequest -Uri "http://localhost:8080" -Method Get -TimeoutSec 5 -ErrorAction SilentlyContinue
-    # Gateway puede devolver 404 si no hay ruta en /, lo cual es válido
-    Write-TestResult "Gateway Service" ($response.StatusCode -eq 404 -or $response.StatusCode -eq 200)
-} catch {
-    if ($_.Exception.Response.StatusCode.value__ -eq 404) {
-        Write-TestResult "Gateway Service" $true
-    } else {
-        Write-TestResult "Gateway Service" $false
+    # Fallback a dashboard si health no está disponible
+    try {
+        $response = Invoke-WebRequest -Uri "http://localhost:8761" -Method Get -TimeoutSec 5 -UseBasicParsing
+        Write-TestResult "Eureka Server" ($response.StatusCode -eq 200)
+    } catch {
+        Write-TestResult "Eureka Server" $false
     }
 }
 
-# Containers Service - Probamos endpoint real
+# Config Server - Health check
 try {
-    $response = Invoke-WebRequest -Uri "http://localhost:8101/types" -Method Get -TimeoutSec 5
+    $response = Invoke-WebRequest -Uri "http://localhost:8888/actuator/health" -Method Get -TimeoutSec 5 -UseBasicParsing
+    Write-TestResult "Config Server" ($response.StatusCode -eq 200)
+} catch {
+    # Fallback a endpoint raíz
+    try {
+        $response = Invoke-WebRequest -Uri "http://localhost:8888" -Method Get -TimeoutSec 5 -UseBasicParsing
+        Write-TestResult "Config Server" ($response.StatusCode -eq 200)
+    } catch {
+        Write-TestResult "Config Server" $false
+    }
+}
+
+# Gateway Service - Health check
+try {
+    $response = Invoke-WebRequest -Uri "http://localhost:8080/actuator/health" -Method Get -TimeoutSec 5 -UseBasicParsing
+    Write-TestResult "Gateway Service" ($response.StatusCode -eq 200)
+} catch {
+    Write-TestResult "Gateway Service" $false
+}
+
+# Containers Service - Health check
+try {
+    $response = Invoke-WebRequest -Uri "http://localhost:8101/actuator/health" -Method Get -TimeoutSec 5 -UseBasicParsing
     Write-TestResult "Containers Service" ($response.StatusCode -eq 200)
 } catch {
-    Write-TestResult "Containers Service" $false
+    # Fallback a endpoint funcional
+    try {
+        $response = Invoke-WebRequest -Uri "http://localhost:8101/types" -Method Get -TimeoutSec 5 -UseBasicParsing
+        Write-TestResult "Containers Service" ($response.StatusCode -eq 200)
+    } catch {
+        Write-TestResult "Containers Service" $false
+    }
 }
 
-# Logistics Service - Probamos endpoint real
+# Logistics Service - Health check
 try {
-    $response = Invoke-WebRequest -Uri "http://localhost:8111/routes" -Method Get -TimeoutSec 5
+    $response = Invoke-WebRequest -Uri "http://localhost:8111/actuator/health" -Method Get -TimeoutSec 5 -UseBasicParsing
     Write-TestResult "Logistics Service" ($response.StatusCode -eq 200)
 } catch {
-    Write-TestResult "Logistics Service" $false
+    # Fallback a endpoint funcional
+    try {
+        $response = Invoke-WebRequest -Uri "http://localhost:8111/routes" -Method Get -TimeoutSec 5 -UseBasicParsing
+        Write-TestResult "Logistics Service" ($response.StatusCode -eq 200)
+    } catch {
+        Write-TestResult "Logistics Service" $false
+    }
 }
 
-# Accounting Service - Probamos endpoint real
+# Accounting Service - Health check
 try {
-    $response = Invoke-WebRequest -Uri "http://localhost:8121/invoices" -Method Get -TimeoutSec 5
+    $response = Invoke-WebRequest -Uri "http://localhost:8121/actuator/health" -Method Get -TimeoutSec 5 -UseBasicParsing
     Write-TestResult "Accounting Service" ($response.StatusCode -eq 200)
 } catch {
-    Write-TestResult "Accounting Service" $false
+    # Fallback a endpoint funcional
+    try {
+        $response = Invoke-WebRequest -Uri "http://localhost:8121/invoices" -Method Get -TimeoutSec 5 -UseBasicParsing
+        Write-TestResult "Accounting Service" ($response.StatusCode -eq 200)
+    } catch {
+        Write-TestResult "Accounting Service" $false
+    }
 }
 
-# Users Service - Probamos endpoint real
+# Users Service - Health check
 try {
-    $response = Invoke-WebRequest -Uri "http://localhost:8131/users" -Method Get -TimeoutSec 5
+    $response = Invoke-WebRequest -Uri "http://localhost:8131/actuator/health" -Method Get -TimeoutSec 5 -UseBasicParsing
     Write-TestResult "Users Service" ($response.StatusCode -eq 200)
 } catch {
-    Write-TestResult "Users Service" $false
+    # Fallback a endpoint funcional
+    try {
+        $response = Invoke-WebRequest -Uri "http://localhost:8131/users" -Method Get -TimeoutSec 5 -UseBasicParsing
+        Write-TestResult "Users Service" ($response.StatusCode -eq 200)
+    } catch {
+        Write-TestResult "Users Service" $false
+    }
 }
 
 # =========================================

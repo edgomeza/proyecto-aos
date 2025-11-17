@@ -8,9 +8,15 @@ spring:
     config:
       server:
         native:
-          search-locations: classpath:/configurations
+          search-locations: classpath:/config
   profiles:
     active: native
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
 
 logging:
   level:
