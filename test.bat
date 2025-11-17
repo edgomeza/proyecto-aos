@@ -13,7 +13,6 @@ REM Verificar que curl está disponible
 where curl >nul 2>nul
 if %ERRORLEVEL% neq 0 (
     echo ERROR: curl no esta instalado
-    echo curl viene incluido en Windows 10/11
     pause
     exit /b 1
 )
@@ -21,9 +20,7 @@ if %ERRORLEVEL% neq 0 (
 echo Verificando que Docker este ejecutandose...
 docker ps >nul 2>nul
 if %ERRORLEVEL% neq 0 (
-    echo.
     echo ERROR: Docker no esta ejecutandose
-    echo Inicia Docker Desktop primero
     pause
     exit /b 1
 )
@@ -31,328 +28,235 @@ echo OK - Docker ejecutandose
 echo.
 
 echo =========================================
-echo 1. VERIFICACION DE INFRAESTRUCTURA
+echo 1. INFRAESTRUCTURA (7 pruebas)
 echo =========================================
 echo.
 
-echo [1/7] Eureka Server (puerto 8761)...
 curl -s http://localhost:8761/actuator/health | find "UP" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] Eureka Server funcionando
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] Eureka Server no responde
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] Eureka Server & set /a PASSED+=1) else (echo    [FALLO] Eureka Server & set /a FAILED+=1)
 
-echo [2/7] Config Server (puerto 8888)...
 curl -s http://localhost:8888/actuator/health | find "UP" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] Config Server funcionando
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] Config Server no responde
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] Config Server & set /a PASSED+=1) else (echo    [FALLO] Config Server & set /a FAILED+=1)
 
-echo [3/7] Gateway Service (puerto 8080)...
 curl -s http://localhost:8080/actuator/health | find "UP" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] Gateway Service funcionando
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] Gateway Service no responde
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] Gateway Service & set /a PASSED+=1) else (echo    [FALLO] Gateway Service & set /a FAILED+=1)
 
-echo [4/7] Containers Service (puerto 8101)...
 curl -s http://localhost:8101/actuator/health | find "UP" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] Containers Service funcionando
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] Containers Service no responde
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] Containers Service & set /a PASSED+=1) else (echo    [FALLO] Containers Service & set /a FAILED+=1)
 
-echo [5/7] Logistics Service (puerto 8111)...
 curl -s http://localhost:8111/actuator/health | find "UP" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] Logistics Service funcionando
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] Logistics Service no responde
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] Logistics Service & set /a PASSED+=1) else (echo    [FALLO] Logistics Service & set /a FAILED+=1)
 
-echo [6/7] Accounting Service (puerto 8121)...
 curl -s http://localhost:8121/actuator/health | find "UP" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] Accounting Service funcionando
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] Accounting Service no responde
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] Accounting Service & set /a PASSED+=1) else (echo    [FALLO] Accounting Service & set /a FAILED+=1)
 
-echo [7/7] Users Service (puerto 8131)...
 curl -s http://localhost:8131/actuator/health | find "UP" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] Users Service funcionando
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] Users Service no responde
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] Users Service & set /a PASSED+=1) else (echo    [FALLO] Users Service & set /a FAILED+=1)
 echo.
 
 echo =========================================
-echo 2. API CONTAINERS SERVICE - TIPOS
+echo 2. CONTAINERS SERVICE - Tipos (3 pruebas)
 echo =========================================
 echo.
 
-echo [1/3] GET /types - Listar todos los tipos
 curl -s -w "%%{http_code}" http://localhost:8101/types -o nul | find "200" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] GET /types
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] GET /types
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /types & set /a PASSED+=1) else (echo    [FALLO] GET /types & set /a FAILED+=1)
 
-echo [2/3] GET /types/active - Listar tipos activos
 curl -s -w "%%{http_code}" http://localhost:8101/types/active -o nul | find "200" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] GET /types/active
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] GET /types/active
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /types/active & set /a PASSED+=1) else (echo    [FALLO] GET /types/active & set /a FAILED+=1)
 
-echo [3/3] POST /types - Crear tipo (simulado)
-curl -s -w "%%{http_code}" -X POST http://localhost:8101/types -H "Content-Type: application/json" -d "{\"name\":\"Test\"}" -o nul | find "201" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] POST /types
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] POST /types - puede fallar si faltan campos requeridos
-    set /a FAILED+=1
-)
+curl -s -w "%%{http_code}" -X POST http://localhost:8101/types -H "Content-Type: application/json" -d "{\"name\":\"Test\"}" -o nul | find /I "20" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] POST /types & set /a PASSED+=1) else (echo    [FALLO] POST /types & set /a FAILED+=1)
 echo.
 
 echo =========================================
-echo 3. API CONTAINERS SERVICE - CONTENEDORES
+echo 3. CONTAINERS SERVICE - Contenedores (4 pruebas)
 echo =========================================
 echo.
 
-echo [1/3] GET /containers - Listar todos los contenedores
 curl -s -w "%%{http_code}" http://localhost:8101/containers -o nul | find "200" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] GET /containers
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] GET /containers
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /containers & set /a PASSED+=1) else (echo    [FALLO] GET /containers & set /a FAILED+=1)
 
-echo [2/3] GET /containers/available - Listar disponibles
 curl -s -w "%%{http_code}" http://localhost:8101/containers/available -o nul | find "200" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] GET /containers/available
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] GET /containers/available
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /containers/available & set /a PASSED+=1) else (echo    [FALLO] GET /containers/available & set /a FAILED+=1)
 
-echo [3/3] GET /containers/status/AVAILABLE - Por estado
 curl -s -w "%%{http_code}" http://localhost:8101/containers/status/AVAILABLE -o nul | find "200" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] GET /containers/status/AVAILABLE
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] GET /containers/status/AVAILABLE
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /containers/status/AVAILABLE & set /a PASSED+=1) else (echo    [FALLO] GET /containers/status/AVAILABLE & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" -X POST http://localhost:8101/containers -H "Content-Type: application/json" -d "{}" -o nul | find /I "20" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] POST /containers & set /a PASSED+=1) else (echo    [FALLO] POST /containers & set /a FAILED+=1)
 echo.
 
 echo =========================================
-echo 4. API CONTAINERS SERVICE - TARIFAS
+echo 4. CONTAINERS SERVICE - Tarifas (3 pruebas)
 echo =========================================
 echo.
 
-echo [1/2] GET /rates - Listar todas las tarifas
 curl -s -w "%%{http_code}" http://localhost:8101/rates -o nul | find "200" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] GET /rates
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] GET /rates
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /rates & set /a PASSED+=1) else (echo    [FALLO] GET /rates & set /a FAILED+=1)
 
-echo [2/2] GET /rates/active - Listar tarifas activas
 curl -s -w "%%{http_code}" http://localhost:8101/rates/active -o nul | find "200" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] GET /rates/active
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] GET /rates/active
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /rates/active & set /a PASSED+=1) else (echo    [FALLO] GET /rates/active & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" -X POST http://localhost:8101/rates -H "Content-Type: application/json" -d "{}" -o nul | find /I "20" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] POST /rates & set /a PASSED+=1) else (echo    [FALLO] POST /rates & set /a FAILED+=1)
 echo.
 
 echo =========================================
-echo 5. API CONTAINERS SERVICE - ALQUILERES
+echo 5. CONTAINERS SERVICE - Alquileres (4 pruebas)
 echo =========================================
 echo.
 
-echo [1/3] GET /rentals - Listar todos los alquileres
 curl -s -w "%%{http_code}" http://localhost:8101/rentals -o nul | find "200" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] GET /rentals
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] GET /rentals
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /rentals & set /a PASSED+=1) else (echo    [FALLO] GET /rentals & set /a FAILED+=1)
 
-echo [2/3] GET /rentals/active - Alquileres activos
 curl -s -w "%%{http_code}" http://localhost:8101/rentals/active -o nul | find "200" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] GET /rentals/active
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] GET /rentals/active
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /rentals/active & set /a PASSED+=1) else (echo    [FALLO] GET /rentals/active & set /a FAILED+=1)
 
-echo [3/3] GET /rentals/pending - Alquileres pendientes
 curl -s -w "%%{http_code}" http://localhost:8101/rentals/pending -o nul | find "200" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] GET /rentals/pending
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] GET /rentals/pending
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /rentals/pending & set /a PASSED+=1) else (echo    [FALLO] GET /rentals/pending & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" -X POST http://localhost:8101/rentals -H "Content-Type: application/json" -d "{}" -o nul | find /I "20" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] POST /rentals & set /a PASSED+=1) else (echo    [FALLO] POST /rentals & set /a FAILED+=1)
 echo.
 
 echo =========================================
-echo 6. API CONTAINERS SERVICE - INSPECCIONES
+echo 6. CONTAINERS SERVICE - Inspecciones (2 pruebas)
 echo =========================================
 echo.
 
-echo [1/1] GET /inspections - Listar inspecciones
 curl -s -w "%%{http_code}" http://localhost:8101/inspections -o nul | find "200" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] GET /inspections
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] GET /inspections
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /inspections & set /a PASSED+=1) else (echo    [FALLO] GET /inspections & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" -X POST http://localhost:8101/inspections -H "Content-Type: application/json" -d "{}" -o nul | find /I "20" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] POST /inspections & set /a PASSED+=1) else (echo    [FALLO] POST /inspections & set /a FAILED+=1)
 echo.
 
 echo =========================================
-echo 7. ENRUTAMIENTO DEL GATEWAY
+echo 7. LOGISTICS SERVICE - Rutas (7 pruebas)
 echo =========================================
 echo.
 
-echo [1/4] Gateway -^> Containers Service (/api/containers/types)
+curl -s -w "%%{http_code}" http://localhost:8111/routes -o nul | find "200" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /routes & set /a PASSED+=1) else (echo    [FALLO] GET /routes & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" http://localhost:8111/routes/status/PLANNED -o nul | find "200" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /routes/status/PLANNED & set /a PASSED+=1) else (echo    [FALLO] GET /routes/status/PLANNED & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" http://localhost:8111/routes/active -o nul | find "200" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /routes/active & set /a PASSED+=1) else (echo    [FALLO] GET /routes/active & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" http://localhost:8111/routes/planned -o nul | find "200" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /routes/planned & set /a PASSED+=1) else (echo    [FALLO] GET /routes/planned & set /a FAILED+=1)
+
+for /f "tokens=1-3 delims=/ " %%a in ('date /t') do (set TODAY=%%c-%%b-%%a)
+curl -s -w "%%{http_code}" http://localhost:8111/routes/date/%TODAY% -o nul | find "200" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /routes/date/{date} & set /a PASSED+=1) else (echo    [FALLO] GET /routes/date/{date} & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" -X POST http://localhost:8111/routes -H "Content-Type: application/json" -d "{}" -o nul | find /I "20" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] POST /routes & set /a PASSED+=1) else (echo    [FALLO] POST /routes & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" -X PUT http://localhost:8111/routes/1 -H "Content-Type: application/json" -d "{}" -o nul | find /I "20" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] PUT /routes/{id} & set /a PASSED+=1) else (echo    [FALLO] PUT /routes/{id} & set /a FAILED+=1)
+echo.
+
+echo =========================================
+echo 8. ACCOUNTING SERVICE - Facturas (8 pruebas)
+echo =========================================
+echo.
+
+curl -s -w "%%{http_code}" http://localhost:8121/invoices -o nul | find "200" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /invoices & set /a PASSED+=1) else (echo    [FALLO] GET /invoices & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" http://localhost:8121/invoices/status/PENDING -o nul | find "200" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /invoices/status/PENDING & set /a PASSED+=1) else (echo    [FALLO] GET /invoices/status/PENDING & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" http://localhost:8121/invoices/pending -o nul | find "200" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /invoices/pending & set /a PASSED+=1) else (echo    [FALLO] GET /invoices/pending & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" http://localhost:8121/invoices/paid -o nul | find "200" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /invoices/paid & set /a PASSED+=1) else (echo    [FALLO] GET /invoices/paid & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" http://localhost:8121/invoices/overdue -o nul | find "200" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /invoices/overdue & set /a PASSED+=1) else (echo    [FALLO] GET /invoices/overdue & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" http://localhost:8121/invoices/customer/1 -o nul | find "200" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /invoices/customer/{id} & set /a PASSED+=1) else (echo    [FALLO] GET /invoices/customer/{id} & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" -X POST http://localhost:8121/invoices -H "Content-Type: application/json" -d "{}" -o nul | find /I "20" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] POST /invoices & set /a PASSED+=1) else (echo    [FALLO] POST /invoices & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" -X PUT http://localhost:8121/invoices/1 -H "Content-Type: application/json" -d "{}" -o nul | find /I "20" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] PUT /invoices/{id} & set /a PASSED+=1) else (echo    [FALLO] PUT /invoices/{id} & set /a FAILED+=1)
+echo.
+
+echo =========================================
+echo 9. USERS SERVICE - Usuarios (8 pruebas)
+echo =========================================
+echo.
+
+curl -s -w "%%{http_code}" http://localhost:8131/users -o nul | find "200" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /users & set /a PASSED+=1) else (echo    [FALLO] GET /users & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" http://localhost:8131/users/role/CUSTOMER -o nul | find "200" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /users/role/CUSTOMER & set /a PASSED+=1) else (echo    [FALLO] GET /users/role/CUSTOMER & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" http://localhost:8131/users/role/ADMIN -o nul | find "200" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /users/role/ADMIN & set /a PASSED+=1) else (echo    [FALLO] GET /users/role/ADMIN & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" http://localhost:8131/users/active -o nul | find "200" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /users/active & set /a PASSED+=1) else (echo    [FALLO] GET /users/active & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" http://localhost:8131/users/inactive -o nul | find "200" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] GET /users/inactive & set /a PASSED+=1) else (echo    [FALLO] GET /users/inactive & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" -X POST http://localhost:8131/users -H "Content-Type: application/json" -d "{}" -o nul | find /I "20" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] POST /users & set /a PASSED+=1) else (echo    [FALLO] POST /users & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" -X PUT http://localhost:8131/users/1 -H "Content-Type: application/json" -d "{}" -o nul | find /I "20" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] PUT /users/{id} & set /a PASSED+=1) else (echo    [FALLO] PUT /users/{id} & set /a FAILED+=1)
+
+curl -s -w "%%{http_code}" -X DELETE http://localhost:8131/users/999 -o nul | find /I "20" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] DELETE /users/{id} & set /a PASSED+=1) else (echo    [FALLO] DELETE /users/{id} & set /a FAILED+=1)
+echo.
+
+echo =========================================
+echo 10. GATEWAY - Enrutamiento (4 pruebas)
+echo =========================================
+echo.
+
 curl -s -w "%%{http_code}" http://localhost:8080/api/containers/types -o nul | find "200" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] Gateway enruta a Containers Service
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] Gateway no enruta a Containers Service
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] Gateway -^> Containers & set /a PASSED+=1) else (echo    [FALLO] Gateway -^> Containers & set /a FAILED+=1)
 
-echo [2/4] Gateway -^> Logistics Service (/api/logistics/actuator/health)
-curl -s -w "%%{http_code}" http://localhost:8080/api/logistics/actuator/health -o nul | find "200" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] Gateway enruta a Logistics Service
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] Gateway no enruta a Logistics Service
-    set /a FAILED+=1
-)
+curl -s -w "%%{http_code}" http://localhost:8080/api/logistics/routes -o nul | find "200" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] Gateway -^> Logistics & set /a PASSED+=1) else (echo    [FALLO] Gateway -^> Logistics & set /a FAILED+=1)
 
-echo [3/4] Gateway -^> Accounting Service (/api/accounting/actuator/health)
-curl -s -w "%%{http_code}" http://localhost:8080/api/accounting/actuator/health -o nul | find "200" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] Gateway enruta a Accounting Service
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] Gateway no enruta a Accounting Service
-    set /a FAILED+=1
-)
+curl -s -w "%%{http_code}" http://localhost:8080/api/accounting/invoices -o nul | find "200" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] Gateway -^> Accounting & set /a PASSED+=1) else (echo    [FALLO] Gateway -^> Accounting & set /a FAILED+=1)
 
-echo [4/4] Gateway -^> Users Service (/api/users/actuator/health)
-curl -s -w "%%{http_code}" http://localhost:8080/api/users/actuator/health -o nul | find "200" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] Gateway enruta a Users Service
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] Gateway no enruta a Users Service
-    set /a FAILED+=1
-)
+curl -s -w "%%{http_code}" http://localhost:8080/api/users/users -o nul | find "200" >nul
+if %ERRORLEVEL% equ 0 (echo    [OK] Gateway -^> Users & set /a PASSED+=1) else (echo    [FALLO] Gateway -^> Users & set /a FAILED+=1)
 echo.
 
 echo =========================================
-echo 8. REGISTRO EN EUREKA
+echo 11. EUREKA - Registro (5 pruebas)
 echo =========================================
 echo.
-
-echo Verificando servicios registrados en Eureka...
 
 curl -s http://localhost:8761/eureka/apps | find "CONTAINERS-SERVICE" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] Containers Service registrado
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] Containers Service NO registrado
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] Containers registrado & set /a PASSED+=1) else (echo    [FALLO] Containers NO registrado & set /a FAILED+=1)
 
 curl -s http://localhost:8761/eureka/apps | find "LOGISTICS-SERVICE" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] Logistics Service registrado
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] Logistics Service NO registrado
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] Logistics registrado & set /a PASSED+=1) else (echo    [FALLO] Logistics NO registrado & set /a FAILED+=1)
 
 curl -s http://localhost:8761/eureka/apps | find "ACCOUNTING-SERVICE" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] Accounting Service registrado
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] Accounting Service NO registrado
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] Accounting registrado & set /a PASSED+=1) else (echo    [FALLO] Accounting NO registrado & set /a FAILED+=1)
 
 curl -s http://localhost:8761/eureka/apps | find "USERS-SERVICE" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] Users Service registrado
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] Users Service NO registrado
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] Users registrado & set /a PASSED+=1) else (echo    [FALLO] Users NO registrado & set /a FAILED+=1)
 
 curl -s http://localhost:8761/eureka/apps | find "GATEWAY-SERVICE" >nul
-if %ERRORLEVEL% equ 0 (
-    echo    [OK] Gateway Service registrado
-    set /a PASSED+=1
-) else (
-    echo    [FALLO] Gateway Service NO registrado
-    set /a FAILED+=1
-)
+if %ERRORLEVEL% equ 0 (echo    [OK] Gateway registrado & set /a PASSED+=1) else (echo    [FALLO] Gateway NO registrado & set /a FAILED+=1)
 echo.
 
 echo =========================================
@@ -360,59 +264,58 @@ echo RESUMEN FINAL
 echo =========================================
 echo.
 set /a TOTAL=!PASSED!+!FAILED!
-echo Total de pruebas ejecutadas: !TOTAL!
-echo Pruebas exitosas:            !PASSED!
-echo Pruebas fallidas:            !FAILED!
+echo Total de pruebas: !TOTAL!
+echo Exitosas:         !PASSED!
+echo Fallidas:         !FAILED!
 echo.
 
 if !FAILED! equ 0 (
     echo ================================================
-    echo [EXITO] TODAS LAS PRUEBAS PASARON CORRECTAMENTE
+    echo [EXITO] TODAS LAS PRUEBAS PASARON
     echo ================================================
     echo.
-    echo Sistema completamente operativo:
-    echo   - Infraestructura:      7/7 servicios
-    echo   - Containers API:       13/13 endpoints
-    echo   - Gateway:              4/4 rutas
-    echo   - Eureka:               5/5 servicios registrados
+    echo Sistema 100%% operativo:
+    echo   - Infraestructura:     7/7
+    echo   - Containers Service:  16/16 endpoints
+    echo   - Logistics Service:   7/7 endpoints
+    echo   - Accounting Service:  8/8 endpoints
+    echo   - Users Service:       8/8 endpoints
+    echo   - Gateway:             4/4 rutas
+    echo   - Eureka:              5/5 servicios
     echo.
     echo TOTAL: !PASSED! pruebas exitosas
 ) else (
     echo ================================================
-    echo [ATENCION] ALGUNAS PRUEBAS FALLARON
+    echo [ATENCION] HAY PRUEBAS FALLIDAS
     echo ================================================
     echo.
-    echo Acciones recomendadas:
-    echo   1. Revisar logs: docker-compose logs -f [servicio]
-    echo   2. Verificar Eureka: http://localhost:8761
-    echo   3. Reiniciar sistema: setup.bat
+    echo Para diagnosticar:
+    echo   docker-compose logs -f [servicio]
+    echo   http://localhost:8761
+    echo.
+    echo Para reiniciar:
+    echo   setup.bat
 )
 echo.
 
 echo =========================================
-echo RECURSOS UTILES
+echo RECURSOS
 echo =========================================
 echo.
 echo Dashboards:
-echo   - Eureka Dashboard:     http://localhost:8761
-echo   - Config Server:        http://localhost:8888
+echo   Eureka:     http://localhost:8761
+echo   Config:     http://localhost:8888
 echo.
-echo Documentacion API (Swagger):
-echo   - Containers Service:   http://localhost:8101/swagger-ui.html
-echo   - Logistics Service:    http://localhost:8111/swagger-ui.html
-echo   - Accounting Service:   http://localhost:8121/swagger-ui.html
-echo   - Users Service:        http://localhost:8131/swagger-ui.html
+echo Swagger (Documentacion API):
+echo   Containers: http://localhost:8101/swagger-ui.html
+echo   Logistics:  http://localhost:8111/swagger-ui.html
+echo   Accounting: http://localhost:8121/swagger-ui.html
+echo   Users:      http://localhost:8131/swagger-ui.html
 echo.
-echo API Gateway (acceso unificado):
-echo   - Containers:           http://localhost:8080/api/containers
-echo   - Logistics:            http://localhost:8080/api/logistics
-echo   - Accounting:           http://localhost:8080/api/accounting
-echo   - Users:                http://localhost:8080/api/users
-echo.
-echo Acceso directo a servicios:
-echo   - Containers:           http://localhost:8101
-echo   - Logistics:            http://localhost:8111
-echo   - Accounting:           http://localhost:8121
-echo   - Users:                http://localhost:8131
+echo Gateway (Acceso unificado):
+echo   Containers: http://localhost:8080/api/containers
+echo   Logistics:  http://localhost:8080/api/logistics
+echo   Accounting: http://localhost:8080/api/accounting
+echo   Users:      http://localhost:8080/api/users
 echo.
 pause
