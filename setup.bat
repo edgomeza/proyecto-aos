@@ -39,7 +39,7 @@ if %ERRORLEVEL% neq 0 (
 
 echo.
 echo [3/3] Iniciando todos los servicios...
-docker-compose up -d
+docker-compose up -d --build
 
 echo.
 echo =========================================

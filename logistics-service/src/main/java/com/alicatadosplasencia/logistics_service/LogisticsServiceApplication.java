@@ -2,12 +2,10 @@ package com.alicatadosplasencia.logistics_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import com.alicatadosplasencia.containers_service.ContainersServiceApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-
 public class LogisticsServiceApplication {
 
 	public static void main(String[] args) {
