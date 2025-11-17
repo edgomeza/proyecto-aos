@@ -1,5 +1,6 @@
 package com.alicatadosplasencia.containers_service.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -32,6 +33,7 @@ public class Container {
     @NotNull(message = "Container type is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "container_type_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private ContainerType containerType;
 
     @Enumerated(EnumType.STRING)
