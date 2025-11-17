@@ -165,6 +165,9 @@ try {
 # =========================================
 Write-TestHeader "2. CONTAINERS SERVICE - Tipos (3 pruebas)"
 
+# Variable para almacenar el ID del tipo creado
+$createdTypeId = $null
+
 # GET /types
 try {
     $response = Invoke-WebRequest -Uri "http://localhost:8101/types" -Method Get -TimeoutSec 5
@@ -184,13 +187,21 @@ try {
 # POST /types
 try {
     $body = @{
-        name = "Test Container 5m3"
+        name = "Test Container 5m3 $TIMESTAMP"
         capacityM3 = 5.0
         active = $true
     } | ConvertTo-Json
 
     $response = Invoke-WebRequest -Uri "http://localhost:8101/types" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 5
-    Write-TestResult "POST /types" ($response.StatusCode -ge 200 -and $response.StatusCode -lt 300)
+    $success = ($response.StatusCode -ge 200 -and $response.StatusCode -lt 300)
+    Write-TestResult "POST /types" $success
+
+    # Capturar el ID del tipo creado
+    if ($success) {
+        $responseObj = $response.Content | ConvertFrom-Json
+        $createdTypeId = $responseObj.id
+        Write-Host "     [INFO] Tipo creado con ID: $createdTypeId" -ForegroundColor DarkGray
+    }
 } catch {
     Write-TestResult "POST /types" $false
 }
@@ -199,6 +210,9 @@ try {
 # 3. CONTAINERS SERVICE - Contenedores (4 pruebas)
 # =========================================
 Write-TestHeader "3. CONTAINERS SERVICE - Contenedores (4 pruebas)"
+
+# Variable para almacenar el ID del contenedor creado
+$createdContainerId = $null
 
 # GET /containers
 try {
@@ -226,16 +240,27 @@ try {
 
 # POST /containers
 try {
+    # Usar el ID del tipo creado anteriormente, o un fallback si no se pudo crear
+    $typeIdToUse = if ($createdTypeId) { $createdTypeId } else { 1 }
+
     $body = @{
         containerCode = "TEST-$TIMESTAMP"
         containerType = @{
-            id = 1
+            id = $typeIdToUse
         }
         status = "AVAILABLE"
     } | ConvertTo-Json
 
     $response = Invoke-WebRequest -Uri "http://localhost:8101/containers" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 5
-    Write-TestResult "POST /containers" ($response.StatusCode -ge 200 -and $response.StatusCode -lt 300)
+    $success = ($response.StatusCode -ge 200 -and $response.StatusCode -lt 300)
+    Write-TestResult "POST /containers" $success
+
+    # Capturar el ID del contenedor creado
+    if ($success) {
+        $responseObj = $response.Content | ConvertFrom-Json
+        $createdContainerId = $responseObj.id
+        Write-Host "     [INFO] Contenedor creado con ID: $createdContainerId (usando tipo ID: $typeIdToUse)" -ForegroundColor DarkGray
+    }
 } catch {
     Write-TestResult "POST /containers" $false
 }
@@ -283,6 +308,9 @@ try {
 # =========================================
 Write-TestHeader "5. CONTAINERS SERVICE - Alquileres (4 pruebas)"
 
+# Variable para almacenar el ID del alquiler creado
+$createdRentalId = $null
+
 # GET /rentals
 try {
     $response = Invoke-WebRequest -Uri "http://localhost:8101/rentals" -Method Get -TimeoutSec 5
@@ -309,9 +337,12 @@ try {
 
 # POST /rentals
 try {
+    # Usar el ID del contenedor creado anteriormente, o un fallback si no se pudo crear
+    $containerIdToUse = if ($createdContainerId) { $createdContainerId } else { 1 }
+
     $body = @{
         container = @{
-            id = 1
+            id = $containerIdToUse
         }
         customerId = 1
         startDate = "2025-11-17"
@@ -320,14 +351,22 @@ try {
     } | ConvertTo-Json -Depth 10
 
     $response = Invoke-WebRequest -Uri "http://localhost:8101/rentals" -Method Post -Body $body -ContentType "application/json; charset=utf-8" -TimeoutSec 5
-    Write-TestResult "POST /rentals" ($response.StatusCode -ge 200 -and $response.StatusCode -lt 300)
+    $success = ($response.StatusCode -ge 200 -and $response.StatusCode -lt 300)
+    Write-TestResult "POST /rentals" $success
+
+    # Capturar el ID del alquiler creado
+    if ($success) {
+        $responseObj = $response.Content | ConvertFrom-Json
+        $createdRentalId = $responseObj.id
+        Write-Host "     [INFO] Alquiler creado con ID: $createdRentalId (usando contenedor ID: $containerIdToUse)" -ForegroundColor DarkGray
+    }
 } catch {
     # Mostrar información de depuración
     if ($_.Exception.Response) {
         $statusCode = $_.Exception.Response.StatusCode.value__
         Write-Host "     [DEBUG] Status: $statusCode" -ForegroundColor DarkGray
         if ($statusCode -eq 400 -or $statusCode -eq 404) {
-            Write-Host "     [INFO] Puede que no haya contenedores disponibles o datos iniciales" -ForegroundColor DarkGray
+            Write-Host "     [INFO] Error al crear alquiler - verifica que el contenedor existe y está disponible" -ForegroundColor DarkGray
         }
     }
     Write-TestResult "POST /rentals" $false
@@ -348,22 +387,32 @@ try {
 
 # POST /inspections
 try {
+    # Usar el ID del alquiler creado anteriormente, o un fallback si no se pudo crear
+    $rentalIdToUse = if ($createdRentalId) { $createdRentalId } else { 1 }
+
     $body = @{
         rental = @{
-            id = 1
+            id = $rentalIdToUse
         }
         conditionStatus = "GOOD"
     } | ConvertTo-Json -Depth 10
 
     $response = Invoke-WebRequest -Uri "http://localhost:8101/inspections" -Method Post -Body $body -ContentType "application/json; charset=utf-8" -TimeoutSec 5
-    Write-TestResult "POST /inspections" ($response.StatusCode -ge 200 -and $response.StatusCode -lt 300)
+    $success = ($response.StatusCode -ge 200 -and $response.StatusCode -lt 300)
+    Write-TestResult "POST /inspections" $success
+
+    # Mostrar información del resultado
+    if ($success) {
+        $responseObj = $response.Content | ConvertFrom-Json
+        Write-Host "     [INFO] Inspección creada con ID: $($responseObj.id) (usando alquiler ID: $rentalIdToUse)" -ForegroundColor DarkGray
+    }
 } catch {
     # Mostrar información de depuración
     if ($_.Exception.Response) {
         $statusCode = $_.Exception.Response.StatusCode.value__
         Write-Host "     [DEBUG] Status: $statusCode" -ForegroundColor DarkGray
         if ($statusCode -eq 400 -or $statusCode -eq 404) {
-            Write-Host "     [INFO] Puede que no haya alquileres disponibles para inspeccionar" -ForegroundColor DarkGray
+            Write-Host "     [INFO] Error al crear inspección - verifica que el alquiler existe" -ForegroundColor DarkGray
         }
     }
     Write-TestResult "POST /inspections" $false
