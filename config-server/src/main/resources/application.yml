@@ -12,6 +12,12 @@ spring:
   profiles:
     active: native
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
 logging:
   level:
     org.springframework.cloud.config: DEBUG
