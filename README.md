@@ -20,12 +20,41 @@ Sistema completo de microservicios para gestión de alquiler de contenedores, lo
 ### Software Requerido:
 - **Java 21** o superior
 - **Maven 3.6+**
-- **MySQL 8.0+** (ejecutándose en localhost:3306)
+- **Docker & Docker Compose** ([Instalar Docker Desktop](https://www.docker.com/products/docker-desktop)) ⭐ RECOMENDADO
+  - O **MySQL 8.0+** si prefieres instalación local
 - **Git**
 
-### Configuración de Base de Datos:
+### ⚙️ Configuración de Base de Datos
 
-Crea las siguientes bases de datos en MySQL:
+#### **Opción 1: Usando Docker Compose** ⭐ RECOMENDADO
+
+La forma más fácil y rápida de configurar las bases de datos:
+
+**Linux/macOS:**
+```bash
+./start-databases.sh
+```
+
+**Windows CMD:**
+```cmd
+start-databases.bat
+```
+
+**Windows PowerShell:**
+```powershell
+.\start-databases.ps1
+```
+
+Esto iniciará automáticamente:
+- ✅ 4 contenedores MySQL (uno por microservicio)
+- ✅ Todas las bases de datos configuradas
+- ✅ phpMyAdmin en http://localhost:8090
+
+**Ver documentación completa:** [DOCKER-DATABASE.md](DOCKER-DATABASE.md)
+
+#### **Opción 2: MySQL Local**
+
+Si prefieres instalar MySQL localmente:
 
 ```sql
 CREATE DATABASE containers_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -34,7 +63,7 @@ CREATE DATABASE accounting_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE DATABASE users_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-Usuario de MySQL por defecto: `root` / `root` (configurable en `config-server/src/main/resources/configurations/`)
+**Nota:** Con Docker Compose, cada base de datos usa un puerto diferente (3306-3309).
 
 ## 🚀 Inicio Rápido
 

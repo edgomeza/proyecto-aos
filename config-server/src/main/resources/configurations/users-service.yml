@@ -5,9 +5,10 @@ spring:
   application:
     name: users-service
   datasource:
-    url: jdbc:mysql://localhost:3306/users_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3309/users_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: root
     password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
 springdoc:
   api-docs:

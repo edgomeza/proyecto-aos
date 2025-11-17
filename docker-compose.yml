@@ -1,0 +1,123 @@
+version: '3.8'
+
+services:
+  # MySQL para Containers Service
+  mysql-containers:
+    image: mysql:8.0
+    container_name: mysql-containers-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: containers_db
+      MYSQL_USER: containers_user
+      MYSQL_PASSWORD: containers_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-containers-data:/var/lib/mysql
+    networks:
+      - alicatados-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # MySQL para Logistics Service
+  mysql-logistics:
+    image: mysql:8.0
+    container_name: mysql-logistics-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: logistics_db
+      MYSQL_USER: logistics_user
+      MYSQL_PASSWORD: logistics_pass
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-logistics-data:/var/lib/mysql
+    networks:
+      - alicatados-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # MySQL para Accounting Service
+  mysql-accounting:
+    image: mysql:8.0
+    container_name: mysql-accounting-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: accounting_db
+      MYSQL_USER: accounting_user
+      MYSQL_PASSWORD: accounting_pass
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql-accounting-data:/var/lib/mysql
+    networks:
+      - alicatados-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # MySQL para Users Service
+  mysql-users:
+    image: mysql:8.0
+    container_name: mysql-users-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: users_db
+      MYSQL_USER: users_user
+      MYSQL_PASSWORD: users_pass
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql-users-data:/var/lib/mysql
+    networks:
+      - alicatados-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # phpMyAdmin - Interfaz web para gestionar las bases de datos (opcional)
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOST: mysql-containers
+      PMA_PORT: 3306
+    ports:
+      - "8090:80"
+    networks:
+      - alicatados-network
+    depends_on:
+      - mysql-containers
+      - mysql-logistics
+      - mysql-accounting
+      - mysql-users
+    restart: unless-stopped
+
+volumes:
+  mysql-containers-data:
+    driver: local
+  mysql-logistics-data:
+    driver: local
+  mysql-accounting-data:
+    driver: local
+  mysql-users-data:
+    driver: local
+
+networks:
+  alicatados-network:
+    driver: bridge
