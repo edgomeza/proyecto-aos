@@ -51,6 +51,12 @@ public class ContainerController {
         return ResponseEntity.ok(containerService.findByContainerType(containerTypeId));
     }
 
+    @GetMapping("/available")
+    @Operation(summary = "Listar contenedores disponibles")
+    public ResponseEntity<List<Container>> getAvailable() {
+        return ResponseEntity.ok(containerService.findByStatus(ContainerStatus.AVAILABLE));
+    }
+
     @PostMapping
     @Operation(summary = "Crear nuevo contenedor")
     public ResponseEntity<Container> create(@RequestBody Container container) {
