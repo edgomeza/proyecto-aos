@@ -288,9 +288,12 @@ try {
 
 # POST /rates
 try {
+    # Usar el ID del tipo creado anteriormente, o un fallback si no se pudo crear
+    $typeIdToUse = if ($createdTypeId) { $createdTypeId } else { 1 }
+
     $body = @{
         containerType = @{
-            id = 1
+            id = $typeIdToUse
         }
         periodType = "DAILY"
         basePrice = 25.0
@@ -298,7 +301,12 @@ try {
     } | ConvertTo-Json
 
     $response = Invoke-WebRequest -Uri "http://localhost:8101/rates" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 5
-    Write-TestResult "POST /rates" ($response.StatusCode -ge 200 -and $response.StatusCode -lt 300)
+    $success = ($response.StatusCode -ge 200 -and $response.StatusCode -lt 300)
+    Write-TestResult "POST /rates" $success
+
+    if ($success) {
+        Write-Host "     [INFO] Tarifa creada para tipo ID: $typeIdToUse" -ForegroundColor DarkGray
+    }
 } catch {
     Write-TestResult "POST /rates" $false
 }
