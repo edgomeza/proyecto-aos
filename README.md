@@ -10,128 +10,52 @@ Sistema completo de microservicios para gestión de alquiler de contenedores, lo
 3. **Gateway Service** (Puerto 8080) - API Gateway
 
 ### Microservicios Base (4):
-1. **Containers Service** (Puerto 8101/8102) - ⭐ Alquiler de contenedores
-2. **Logistics Service** (Puerto 8111/8112) - Planificación de rutas y entregas
-3. **Accounting Service** (Puerto 8121/8122) - Gestión contable y nóminas
-4. **Users Service** (Puerto 8131/8132) - Autenticación y gestión de usuarios
+1. **Containers Service** (Puerto 8101) - ⭐ Alquiler de contenedores
+2. **Logistics Service** (Puerto 8111) - Planificación de rutas y entregas
+3. **Accounting Service** (Puerto 8121) - Gestión contable y nóminas
+4. **Users Service** (Puerto 8131) - Autenticación y gestión de usuarios
 
 ## 📋 Requisitos Previos
 
 ### Software Requerido:
-- **Java 21** o superior
-- **Maven 3.6+**
-- **Docker & Docker Compose** ([Instalar Docker Desktop](https://www.docker.com/products/docker-desktop)) ⭐ RECOMENDADO
-  - O **MySQL 8.0+** si prefieres instalación local
+- **Docker Desktop** ([Descargar aquí](https://www.docker.com/products/docker-desktop))
 - **Git**
 
-### ⚙️ Configuración de Base de Datos
-
-#### **Opción 1: Usando Docker Compose** ⭐ RECOMENDADO
-
-La forma más fácil y rápida de configurar las bases de datos:
-
-**Linux/macOS:**
-```bash
-./start-databases.sh
-```
-
-**Windows CMD:**
-```cmd
-start-databases.bat
-```
-
-**Windows PowerShell:**
-```powershell
-.\start-databases.ps1
-```
-
-Esto iniciará automáticamente:
-- ✅ 4 contenedores MySQL (uno por microservicio)
-- ✅ Todas las bases de datos configuradas
-- ✅ phpMyAdmin en http://localhost:8090
-
-**Ver documentación completa:** [DOCKER-DATABASE.md](DOCKER-DATABASE.md)
-
-#### **Opción 2: MySQL Local**
-
-Si prefieres instalar MySQL localmente:
-
-```sql
-CREATE DATABASE containers_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE DATABASE logistics_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE DATABASE accounting_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE DATABASE users_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-
-**Nota:** Con Docker Compose, cada base de datos usa un puerto diferente (3306-3309).
+**Nota:** Ya NO necesitas instalar Java, Maven ni MySQL. Docker se encarga de todo.
 
 ## 🚀 Inicio Rápido
 
-### Opción 1: Usando Scripts Automatizados
+### ⚡ Usando Docker Compose (RECOMENDADO)
 
-Ve al directorio `codigo/` y ejecuta los scripts según tu sistema operativo:
+**Windows:**
+
+1. **Compilar y ejecutar todo el sistema:**
+```cmd
+setup.bat
+```
+
+2. **Probar que todo funciona:**
+```cmd
+test.bat
+```
+
+¡Así de simple! El script `setup.bat` se encarga de:
+- ✅ Compilar todos los microservicios
+- ✅ Crear imágenes Docker
+- ✅ Iniciar base de datos MySQL
+- ✅ Iniciar todos los servicios con orden de dependencias
+- ✅ Esperar a que todo esté listo
 
 **Linux/macOS:**
+
 ```bash
-cd codigo
-./script_compilacion_empaquetado.sh
-./script_ejecucion_sistema.sh
+# Compilar y ejecutar
+docker-compose build
+docker-compose up -d
+
+# Esperar 30 segundos para que todo inicie
+sleep 30
 ```
-
-**Windows CMD:**
-```cmd
-cd codigo
-script_compilacion_empaquetado.bat
-script_ejecucion_sistema.bat
-```
-
-**Windows PowerShell:**
-```powershell
-cd codigo
-.\script_compilacion_empaquetado.ps1
-.\script_ejecucion_sistema.ps1
-```
-
-### Opción 2: Ejecución Manual
-
-**IMPORTANTE:** Sigue este orden para evitar errores:
-
-#### 1. Iniciar Eureka Server (esperar 15 segundos)
-```bash
-cd eureka-server
-mvn spring-boot:run
-```
-
-#### 2. Iniciar Config Server (esperar 10 segundos)
-```bash
-cd config-server
-mvn spring-boot:run
-```
-
-#### 3. Iniciar Gateway Service (esperar 10 segundos)
-```bash
-cd gateway-service
-mvn spring-boot:run
-```
-
-#### 4. Iniciar Microservicios Base (pueden iniciarse en paralelo)
-
-**Containers Service - Instancia 1:**
-```bash
-cd containers-service
-mvn spring-boot:run
-```
-
-**Containers Service - Instancia 2 (nueva terminal):**
-```bash
-cd containers-service
-mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=8102
-```
-
-Repite para los demás servicios con sus puertos correspondientes:
-- Logistics: 8111, 8112
-- Accounting: 8121, 8122
-- Users: 8131, 8132
 
 ## 🔗 URLs Importantes
 
@@ -154,27 +78,78 @@ Repite para los demás servicios con sus puertos correspondientes:
 
 ## ✅ Verificación del Sistema
 
-### 1. Verificar Eureka
-Abre http://localhost:8761 y verifica que todos los servicios estén registrados.
+Ejecuta el script de pruebas para verificar que todos los servicios funcionan:
 
-### 2. Probar Gateway
-```bash
-curl http://localhost:8080/actuator/health
+```cmd
+test.bat
 ```
 
-### 3. Probar Containers Service
+Este script verifica:
+- ✅ Eureka Server está activo
+- ✅ Config Server está activo
+- ✅ Gateway Service está activo
+- ✅ Containers Service está activo
+- ✅ Logistics Service está activo
+- ✅ Accounting Service está activo
+- ✅ Users Service está activo
+
+## 🐳 Comandos Docker Útiles
+
+### Ver estado de los servicios:
 ```bash
-curl http://localhost:8101/actuator/health
-curl http://localhost:8101/types
+docker-compose ps
 ```
 
-### 4. Ejecutar Suite de Pruebas
+### Ver logs de todos los servicios:
 ```bash
-cd codigo
-./scripts_ejecucion_pruebas.sh  # Linux/macOS
-# o
-scripts_ejecucion_pruebas.bat   # Windows
+docker-compose logs -f
 ```
+
+### Ver logs de un servicio específico:
+```bash
+docker-compose logs -f containers-service
+docker-compose logs -f gateway-service
+```
+
+### Detener todos los servicios:
+```bash
+docker-compose down
+```
+
+### Detener y eliminar volúmenes (resetear base de datos):
+```bash
+docker-compose down -v
+```
+
+### Reconstruir un servicio específico:
+```bash
+docker-compose build containers-service
+docker-compose up -d containers-service
+```
+
+### Reiniciar un servicio:
+```bash
+docker-compose restart containers-service
+```
+
+## 🗄️ Base de Datos
+
+El sistema usa una única base de datos MySQL llamada `alicatados_db` que contiene todas las tablas de todos los microservicios.
+
+**Conexión a la base de datos:**
+- Host: `localhost`
+- Puerto: `3306`
+- Base de datos: `alicatados_db`
+- Usuario: `root`
+- Contraseña: `root`
+
+**Conectar con MySQL CLI:**
+```bash
+docker exec -it alicatados-mysql mysql -uroot -proot alicatados_db
+```
+
+**Conectar con herramientas GUI** (MySQL Workbench, DBeaver, etc.):
+- Usa las credenciales de arriba
 
 ## 🛠️ Estructura del Proyecto
 
@@ -188,15 +163,17 @@ proyecto-aos/
 │   ├── model/                  # Entidades JPA
 │   ├── repository/             # Repositorios
 │   ├── service/                # Lógica de negocio
-│   └── controller/             # API REST
+│   ├── controller/             # API REST
+│   └── Dockerfile              # Contenedor Docker
 ├── logistics-service/          # Microservicio de Logística
+│   └── Dockerfile
 ├── accounting-service/         # Microservicio de Contabilidad
+│   └── Dockerfile
 ├── users-service/              # Microservicio de Usuarios
-├── codigo/                     # Scripts de compilación y ejecución
-│   ├── README.md
-│   ├── *.sh                    # Scripts Linux/macOS
-│   ├── *.bat                   # Scripts Windows CMD
-│   └── *.ps1                   # Scripts Windows PowerShell
+│   └── Dockerfile
+├── docker-compose.yml          # Orquestación de todos los servicios
+├── setup.bat                   # Script de instalación (Windows)
+├── test.bat                    # Script de pruebas (Windows)
 └── README.md                   # Este archivo
 ```
 
@@ -204,7 +181,6 @@ proyecto-aos/
 
 - **Guía de Implementación**: `04_Guia_Implementacion_Completa.md`
 - **Problemas y Conclusiones**: `05_Problemas_y_Conclusiones.md`
-- **Scripts**: Ver `codigo/README.md`
 
 ## 🔧 Configuración
 
@@ -223,38 +199,44 @@ Archivos de configuración:
 
 ## 🐛 Solución de Problemas
 
-### Error: "No spring.config.import property has been defined"
-**Solución:** Este error ha sido corregido. Asegúrate de tener la última versión del código.
+### Error: "Docker no esta instalado"
+**Solución:** Instala Docker Desktop desde https://www.docker.com/products/docker-desktop
 
-### Error: "Failed to configure a DataSource"
-**Causa:** MySQL no está ejecutándose o las bases de datos no existen.
-**Solución:**
-1. Verifica que MySQL esté ejecutándose
-2. Crea las bases de datos necesarias (ver sección "Configuración de Base de Datos")
-3. Verifica credenciales en los archivos de configuración
-
-### Error: "Connection refused" al conectar con Config Server
-**Causa:** Config Server no está iniciado o aún no está listo.
-**Solución:**
-1. Inicia Config Server primero
-2. Espera 10 segundos antes de iniciar otros servicios
-3. Los servicios se conectarán automáticamente cuando Config Server esté disponible
+### Error: "Docker no esta ejecutandose"
+**Solución:** Inicia Docker Desktop y espera a que arranque completamente.
 
 ### Puerto ya en uso
+**Causa:** Otro proceso está usando el puerto.
 **Solución:**
 ```bash
-# Linux/macOS
-lsof -i :8080
-kill -9 <PID>
+# Detener todos los contenedores
+docker-compose down
 
-# Windows
+# Ver qué proceso usa el puerto (Windows)
 netstat -ano | findstr :8080
 taskkill /PID <PID> /F
 ```
 
-### Servicios no se registran en Eureka
-**Causa:** Eureka Server no estaba listo cuando se iniciaron los servicios.
-**Solución:** Reinicia los microservicios o espera 30 segundos (reintentos automáticos).
+### Servicios no están listos después de 30 segundos
+**Solución:** Algunos servicios pueden tardar más en arrancar la primera vez. Verifica el estado:
+```bash
+docker-compose ps
+docker-compose logs -f
+```
+
+### Error: "Fallo la construccion de imagenes"
+**Causa:** Problema al compilar el código Java.
+**Solución:**
+1. Revisa los logs de Docker
+2. Asegúrate de tener conexión a internet (Maven descarga dependencias)
+3. Intenta de nuevo: `docker-compose build --no-cache`
+
+### Resetear completamente el sistema
+```bash
+docker-compose down -v
+docker system prune -a
+setup.bat
+```
 
 ## 📊 Estado de Implementación
 
@@ -268,19 +250,30 @@ taskkill /PID <PID> /F
   - [x] 5 Services
   - [x] 5 Controllers REST
   - [x] Documentación Swagger
+- [x] Docker Compose con todos los servicios
+- [x] Scripts automatizados de setup y test
 
 ### ⏳ Pendiente:
-- [ ] Logistics Service (estructura creada)
-- [ ] Accounting Service (estructura creada)
-- [ ] Users Service (estructura creada)
+- [ ] Logistics Service (estructura creada, lógica de negocio pendiente)
+- [ ] Accounting Service (estructura creada, lógica de negocio pendiente)
+- [ ] Users Service (estructura creada, lógica de negocio pendiente)
 
 ## 🔄 Actualizar el Sistema
 
 Después de hacer cambios en el código:
 
-1. Detén todos los servicios
-2. Ejecuta el script de compilación
-3. Vuelve a ejecutar el script de ejecución
+```bash
+# 1. Detener servicios
+docker-compose down
+
+# 2. Reconstruir
+docker-compose build
+
+# 3. Iniciar de nuevo
+docker-compose up -d
+```
+
+O simplemente ejecuta `setup.bat` de nuevo.
 
 ## 🎯 Características del Containers Service
 
@@ -297,25 +290,51 @@ El microservicio de Contenedores incluye:
 ✅ **Inspecciones**: Registro de daños y deducción de fianzas
 ✅ **API REST Completa**: Documentada con Swagger/OpenAPI
 
+### Ejemplos de API
+
+**Listar tipos de contenedores:**
+```bash
+curl http://localhost:8080/api/containers/types
+```
+
+**Crear un nuevo tipo:**
+```bash
+curl -X POST http://localhost:8080/api/containers/types \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Contenedor 10m³",
+    "capacity": 10.0,
+    "length": 3.0,
+    "width": 2.0,
+    "height": 1.7
+  }'
+```
+
+**Ver todos los contenedores:**
+```bash
+curl http://localhost:8080/api/containers/containers
+```
+
 ## 🤝 Contribuir
 
 Para contribuir al proyecto:
 
 1. Crea una rama desde `main`
 2. Implementa tus cambios
-3. Asegúrate de que todo compile sin errores
-4. Ejecuta las pruebas
+3. Reconstruye con Docker: `docker-compose build`
+4. Prueba: `test.bat`
 5. Crea un Pull Request
 
 ## 📞 Contacto y Soporte
 
 Para problemas técnicos:
 1. Revisa esta documentación
-2. Consulta los logs de cada servicio
-3. Verifica la configuración en Config Server
-4. Revisa el dashboard de Eureka
+2. Ejecuta `test.bat` para diagnosticar
+3. Revisa los logs: `docker-compose logs -f`
+4. Verifica el dashboard de Eureka: http://localhost:8761
 
 ---
 
 **Proyecto desarrollado para Alicatados Plasencia**
 Sistema de Microservicios con Spring Boot 3.5.7 y Spring Cloud 2025.0.0
+Desplegado con Docker y Docker Compose

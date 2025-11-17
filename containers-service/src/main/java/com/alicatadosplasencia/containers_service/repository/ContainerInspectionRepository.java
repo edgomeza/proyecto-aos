@@ -4,7 +4,6 @@ import com.alicatadosplasencia.containers_service.model.ContainerInspection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Repository para ContainerInspection
@@ -17,9 +16,4 @@ public interface ContainerInspectionRepository extends JpaRepository<ContainerIn
      * Encuentra todas las inspecciones de un alquiler específico
      */
     List<ContainerInspection> findByRentalId(Long rentalId);
-
-    /**
-     * Encuentra la inspección de un alquiler
-     */
-    Optional<ContainerInspection> findByRentalId_Single(Long rentalId);
 }

@@ -1,19 +1,17 @@
 version: '3.8'
 
 services:
-  # MySQL para Containers Service
-  mysql-containers:
+  # Base de datos MySQL unificada
+  mysql:
     image: mysql:8.0
-    container_name: mysql-containers-db
+    container_name: alicatados-mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: containers_db
-      MYSQL_USER: containers_user
-      MYSQL_PASSWORD: containers_pass
+      MYSQL_DATABASE: alicatados_db
     ports:
       - "3306:3306"
     volumes:
-      - mysql-containers-data:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
     networks:
       - alicatados-network
     healthcheck:
@@ -23,99 +21,186 @@ services:
       retries: 5
     restart: unless-stopped
 
-  # MySQL para Logistics Service
-  mysql-logistics:
-    image: mysql:8.0
-    container_name: mysql-logistics-db
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: logistics_db
-      MYSQL_USER: logistics_user
-      MYSQL_PASSWORD: logistics_pass
+  # Eureka Server - Service Discovery
+  eureka-server:
+    build:
+      context: ./eureka-server
+      dockerfile: Dockerfile
+    container_name: eureka-server
     ports:
-      - "3307:3306"
-    volumes:
-      - mysql-logistics-data:/var/lib/mysql
+      - "8761:8761"
     networks:
       - alicatados-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
-      interval: 10s
-      timeout: 5s
+      test: ["CMD-SHELL", "curl -f http://localhost:8761/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
       retries: 5
+      start_period: 40s
     restart: unless-stopped
 
-  # MySQL para Accounting Service
-  mysql-accounting:
-    image: mysql:8.0
-    container_name: mysql-accounting-db
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: accounting_db
-      MYSQL_USER: accounting_user
-      MYSQL_PASSWORD: accounting_pass
+  # Config Server - Configuración centralizada
+  config-server:
+    build:
+      context: ./config-server
+      dockerfile: Dockerfile
+    container_name: config-server
     ports:
-      - "3308:3306"
-    volumes:
-      - mysql-accounting-data:/var/lib/mysql
-    networks:
-      - alicatados-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-
-  # MySQL para Users Service
-  mysql-users:
-    image: mysql:8.0
-    container_name: mysql-users-db
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: users_db
-      MYSQL_USER: users_user
-      MYSQL_PASSWORD: users_pass
-    ports:
-      - "3309:3306"
-    volumes:
-      - mysql-users-data:/var/lib/mysql
-    networks:
-      - alicatados-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-
-  # phpMyAdmin - Interfaz web para gestionar las bases de datos (opcional)
-  phpmyadmin:
-    image: phpmyadmin:latest
-    container_name: phpmyadmin
-    environment:
-      PMA_ARBITRARY: 1
-      PMA_HOST: mysql-containers
-      PMA_PORT: 3306
-    ports:
-      - "8090:80"
+      - "8888:8888"
     networks:
       - alicatados-network
     depends_on:
-      - mysql-containers
-      - mysql-logistics
-      - mysql-accounting
-      - mysql-users
+      eureka-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8888/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    restart: unless-stopped
+
+  # Gateway Service - API Gateway
+  gateway-service:
+    build:
+      context: ./gateway-service
+      dockerfile: Dockerfile
+    container_name: gateway-service
+    ports:
+      - "8080:8080"
+    networks:
+      - alicatados-network
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    restart: unless-stopped
+
+  # Containers Service - Gestión de contenedores
+  containers-service:
+    build:
+      context: ./containers-service
+      dockerfile: Dockerfile
+    container_name: containers-service
+    ports:
+      - "8101:8101"
+    networks:
+      - alicatados-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/alicatados_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8101/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+  # Logistics Service - Planificación de rutas
+  logistics-service:
+    build:
+      context: ./logistics-service
+      dockerfile: Dockerfile
+    container_name: logistics-service
+    ports:
+      - "8111:8111"
+    networks:
+      - alicatados-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/alicatados_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8111/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+  # Accounting Service - Gestión contable
+  accounting-service:
+    build:
+      context: ./accounting-service
+      dockerfile: Dockerfile
+    container_name: accounting-service
+    ports:
+      - "8121:8121"
+    networks:
+      - alicatados-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/alicatados_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8121/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+  # Users Service - Autenticación y usuarios
+  users-service:
+    build:
+      context: ./users-service
+      dockerfile: Dockerfile
+    container_name: users-service
+    ports:
+      - "8131:8131"
+    networks:
+      - alicatados-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/alicatados_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8131/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     restart: unless-stopped
 
 volumes:
-  mysql-containers-data:
-    driver: local
-  mysql-logistics-data:
-    driver: local
-  mysql-accounting-data:
-    driver: local
-  mysql-users-data:
+  mysql-data:
     driver: local
 
 networks:
