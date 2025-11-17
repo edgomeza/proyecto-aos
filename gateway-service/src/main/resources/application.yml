@@ -1,3 +1,6 @@
+server:
+  port: 8080
+
 spring:
   application:
     name: gateway-service
@@ -5,8 +8,60 @@ spring:
     import: optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}
   cloud:
     config:
-      enabled: true
+      enabled: false
       fail-fast: false
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # Containers Service - Gestión de contenedores y alquileres
+        - id: containers-service
+          uri: lb://containers-service
+          predicates:
+            - Path=/api/containers/**
+          filters:
+            - RewritePath=/api/containers/(?<segment>.*), /${segment}
 
-server:
-  port: 8080
+        # Logistics Service - Planificación de rutas y entregas
+        - id: logistics-service
+          uri: lb://logistics-service
+          predicates:
+            - Path=/api/logistics/**
+          filters:
+            - RewritePath=/api/logistics/(?<segment>.*), /${segment}
+
+        # Accounting Service - Gestión contable y facturación
+        - id: accounting-service
+          uri: lb://accounting-service
+          predicates:
+            - Path=/api/accounting/**
+          filters:
+            - RewritePath=/api/accounting/(?<segment>.*), /${segment}
+
+        # Users Service - Autenticación y gestión de usuarios
+        - id: users-service
+          uri: lb://users-service
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - RewritePath=/api/users/(?<segment>.*), /${segment}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+    fetch-registry: true
+    register-with-eureka: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.loadbalancer: DEBUG
