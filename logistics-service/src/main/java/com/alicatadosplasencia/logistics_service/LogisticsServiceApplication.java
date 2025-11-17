@@ -1,0 +1,21 @@
+package com.alicatadosplasencia.logistics_service;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import com.alicatadosplasencia.containers_service.ContainersServiceApplication;
+
+@SpringBootApplication
+@EnableDiscoveryClient
+
+public class LogisticsServiceApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(LogisticsServiceApplication.class, args);
+        System.out.println("========================================");
+        System.out.println("⭐ LOGISTICS SERVICE INICIADO ⭐");
+        System.out.println("Sistema de Logística");
+        System.out.println("========================================");
+	}
+
+}

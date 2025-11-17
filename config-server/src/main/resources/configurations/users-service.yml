@@ -1,0 +1,25 @@
+server:
+  port: 8131
+
+spring:
+  application:
+    name: users-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/users_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    username: root
+    password: root
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+# Configuración JWT
+jwt:
+  secret: AlicatadosPlasenciaSecretKey2025MicroservicesSystemVerySecure
+  expiration: 86400000
+
+logging:
+  level:
+    com.alicatadosplasencia: DEBUG
