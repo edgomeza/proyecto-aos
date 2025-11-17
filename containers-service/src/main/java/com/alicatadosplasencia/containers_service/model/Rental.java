@@ -1,6 +1,8 @@
 package com.alicatadosplasencia.containers_service.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,20 +25,25 @@ public class Rental {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Rental number is required")
     @Column(name = "rental_number", unique = true, nullable = false, length = 50)
     private String rentalNumber; // RENT-2025-00001
 
+    @NotNull(message = "Container is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "container_id", nullable = false)
     private Container container;
 
+    @NotNull(message = "Customer ID is required")
     @Column(name = "customer_id", nullable = false)
     private Long customerId; // Relación con users-service
 
     // Fechas del alquiler
+    @NotNull(message = "Start date is required")
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
+    @NotNull(message = "Expected end date is required")
     @Column(name = "expected_end_date", nullable = false)
     private LocalDate expectedEndDate;
 
@@ -44,6 +51,7 @@ public class Rental {
     private LocalDate actualEndDate; // Fecha real de devolución
 
     // Ubicación de entrega
+    @NotBlank(message = "Delivery address is required")
     @Column(name = "delivery_address", columnDefinition = "TEXT", nullable = false)
     private String deliveryAddress;
 

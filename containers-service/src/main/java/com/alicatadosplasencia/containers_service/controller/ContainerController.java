@@ -5,6 +5,7 @@ import com.alicatadosplasencia.containers_service.model.Container.ContainerStatu
 import com.alicatadosplasencia.containers_service.service.ContainerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -59,14 +60,14 @@ public class ContainerController {
 
     @PostMapping
     @Operation(summary = "Crear nuevo contenedor")
-    public ResponseEntity<Container> create(@RequestBody Container container) {
+    public ResponseEntity<Container> create(@Valid @RequestBody Container container) {
         Container created = containerService.save(container);
         return ResponseEntity.status(201).body(created);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar contenedor")
-    public ResponseEntity<Container> update(@PathVariable Long id, @RequestBody Container container) {
+    public ResponseEntity<Container> update(@PathVariable Long id, @Valid @RequestBody Container container) {
         container.setId(id);
         Container updated = containerService.save(container);
         return ResponseEntity.ok(updated);

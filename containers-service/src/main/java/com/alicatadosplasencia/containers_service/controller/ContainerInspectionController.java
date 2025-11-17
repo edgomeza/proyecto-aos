@@ -4,6 +4,7 @@ import com.alicatadosplasencia.containers_service.model.ContainerInspection;
 import com.alicatadosplasencia.containers_service.service.ContainerInspectionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,14 +41,14 @@ public class ContainerInspectionController {
 
     @PostMapping
     @Operation(summary = "Crear nueva inspección")
-    public ResponseEntity<ContainerInspection> create(@RequestBody ContainerInspection inspection) {
+    public ResponseEntity<ContainerInspection> create(@Valid @RequestBody ContainerInspection inspection) {
         ContainerInspection created = inspectionService.save(inspection);
         return ResponseEntity.status(201).body(created);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar inspección")
-    public ResponseEntity<ContainerInspection> update(@PathVariable Long id, @RequestBody ContainerInspection inspection) {
+    public ResponseEntity<ContainerInspection> update(@PathVariable Long id, @Valid @RequestBody ContainerInspection inspection) {
         inspection.setId(id);
         ContainerInspection updated = inspectionService.save(inspection);
         return ResponseEntity.ok(updated);

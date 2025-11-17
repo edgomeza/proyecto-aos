@@ -4,6 +4,7 @@ import com.alicatadosplasencia.containers_service.model.ContainerType;
 import com.alicatadosplasencia.containers_service.service.ContainerTypeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,14 +41,14 @@ public class ContainerTypeController {
 
     @PostMapping
     @Operation(summary = "Crear nuevo tipo de contenedor")
-    public ResponseEntity<ContainerType> create(@RequestBody ContainerType containerType) {
+    public ResponseEntity<ContainerType> create(@Valid @RequestBody ContainerType containerType) {
         ContainerType created = containerTypeService.save(containerType);
         return ResponseEntity.status(201).body(created);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar tipo de contenedor")
-    public ResponseEntity<ContainerType> update(@PathVariable Long id, @RequestBody ContainerType containerType) {
+    public ResponseEntity<ContainerType> update(@PathVariable Long id, @Valid @RequestBody ContainerType containerType) {
         containerType.setId(id);
         ContainerType updated = containerTypeService.save(containerType);
         return ResponseEntity.ok(updated);

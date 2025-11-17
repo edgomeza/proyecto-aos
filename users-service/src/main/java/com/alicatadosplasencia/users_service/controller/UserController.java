@@ -5,6 +5,7 @@ import com.alicatadosplasencia.users_service.model.User.UserRole;
 import com.alicatadosplasencia.users_service.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,16 +64,15 @@ public class UserController {
 
     @PostMapping
     @Operation(summary = "Crear nuevo usuario")
-    public ResponseEntity<User> create(@RequestBody User user) {
+    public ResponseEntity<User> create(@Valid @RequestBody User user) {
         User created = userService.save(user);
         return ResponseEntity.status(201).body(created);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar usuario")
-    public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User user) {
-        user.setId(id);
-        User updated = userService.save(user);
+    public ResponseEntity<User> update(@PathVariable Long id, @Valid @RequestBody User user) {
+        User updated = userService.update(id, user);
         return ResponseEntity.ok(updated);
     }
 

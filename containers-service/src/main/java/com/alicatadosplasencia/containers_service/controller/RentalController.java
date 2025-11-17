@@ -4,6 +4,7 @@ import com.alicatadosplasencia.containers_service.model.Rental;
 import com.alicatadosplasencia.containers_service.service.RentalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,7 +58,7 @@ public class RentalController {
 
     @PostMapping
     @Operation(summary = "Crear nuevo alquiler de contenedor")
-    public ResponseEntity<Rental> create(@RequestBody Rental rental) {
+    public ResponseEntity<Rental> create(@Valid @RequestBody Rental rental) {
         Rental created = rentalService.createRental(rental);
         return ResponseEntity.status(201).body(created);
     }

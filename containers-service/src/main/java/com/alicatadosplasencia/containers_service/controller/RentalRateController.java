@@ -4,6 +4,7 @@ import com.alicatadosplasencia.containers_service.model.RentalRate;
 import com.alicatadosplasencia.containers_service.service.RentalRateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,14 +49,14 @@ public class RentalRateController {
 
     @PostMapping
     @Operation(summary = "Crear nueva tarifa")
-    public ResponseEntity<RentalRate> create(@RequestBody RentalRate rentalRate) {
+    public ResponseEntity<RentalRate> create(@Valid @RequestBody RentalRate rentalRate) {
         RentalRate created = rentalRateService.save(rentalRate);
         return ResponseEntity.status(201).body(created);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar tarifa")
-    public ResponseEntity<RentalRate> update(@PathVariable Long id, @RequestBody RentalRate rentalRate) {
+    public ResponseEntity<RentalRate> update(@PathVariable Long id, @Valid @RequestBody RentalRate rentalRate) {
         rentalRate.setId(id);
         RentalRate updated = rentalRateService.save(rentalRate);
         return ResponseEntity.ok(updated);

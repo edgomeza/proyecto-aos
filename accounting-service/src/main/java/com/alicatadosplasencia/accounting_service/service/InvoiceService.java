@@ -35,6 +35,24 @@ public class InvoiceService {
         return invoiceRepository.save(invoice);
     }
 
+    public Invoice update(Long id, Invoice invoiceDetails) {
+        Invoice invoice = findById(id);
+
+        // Update fields
+        invoice.setInvoiceNumber(invoiceDetails.getInvoiceNumber());
+        invoice.setCustomerId(invoiceDetails.getCustomerId());
+        invoice.setCustomerName(invoiceDetails.getCustomerName());
+        invoice.setInvoiceDate(invoiceDetails.getInvoiceDate());
+        invoice.setDueDate(invoiceDetails.getDueDate());
+        invoice.setSubtotal(invoiceDetails.getSubtotal());
+        invoice.setTaxAmount(invoiceDetails.getTaxAmount());
+        invoice.setTotalAmount(invoiceDetails.getTotalAmount());
+        invoice.setStatus(invoiceDetails.getStatus());
+        invoice.setDescription(invoiceDetails.getDescription());
+
+        return invoiceRepository.save(invoice);
+    }
+
     public void delete(Long id) {
         invoiceRepository.deleteById(id);
     }

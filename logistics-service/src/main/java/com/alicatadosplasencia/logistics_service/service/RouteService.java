@@ -36,6 +36,24 @@ public class RouteService {
         return routeRepository.save(route);
     }
 
+    public Route update(Long id, Route routeDetails) {
+        Route route = findById(id);
+
+        // Update fields
+        route.setRouteCode(routeDetails.getRouteCode());
+        route.setOrigin(routeDetails.getOrigin());
+        route.setDestination(routeDetails.getDestination());
+        route.setDistanceKm(routeDetails.getDistanceKm());
+        route.setEstimatedDuration(routeDetails.getEstimatedDuration());
+        route.setScheduleDate(routeDetails.getScheduleDate());
+        route.setDepartureTime(routeDetails.getDepartureTime());
+        route.setStatus(routeDetails.getStatus());
+        route.setDriverName(routeDetails.getDriverName());
+        route.setVehiclePlate(routeDetails.getVehiclePlate());
+
+        return routeRepository.save(route);
+    }
+
     public void delete(Long id) {
         routeRepository.deleteById(id);
     }

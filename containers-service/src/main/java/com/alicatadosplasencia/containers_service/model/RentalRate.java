@@ -1,6 +1,7 @@
 package com.alicatadosplasencia.containers_service.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,14 +24,17 @@ public class RentalRate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Container type is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "container_type_id", nullable = false)
     private ContainerType containerType;
 
+    @NotNull(message = "Period type is required")
     @Enumerated(EnumType.STRING)
     @Column(name = "period_type", nullable = false, length = 20)
     private PeriodType periodType;
 
+    @NotNull(message = "Base price is required")
     @Column(name = "base_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal basePrice; // Precio por día/semana/mes
 
