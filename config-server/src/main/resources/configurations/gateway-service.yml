@@ -16,28 +16,28 @@ spring:
           predicates:
             - Path=/api/containers/**
           filters:
-            - StripPrefix=1
- 
+            - StripPrefix=2
+
         - id: logistics-service
           uri: lb://logistics-service
           predicates:
             - Path=/api/logistics/**
           filters:
-            - StripPrefix=1
- 
+            - StripPrefix=2
+
         - id: accounting-service
           uri: lb://accounting-service
           predicates:
             - Path=/api/accounting/**
           filters:
-            - StripPrefix=1
- 
+            - StripPrefix=2
+
         - id: users-service
           uri: lb://users-service
           predicates:
             - Path=/api/users/**
           filters:
-            - StripPrefix=1
+            - StripPrefix=2
 
 logging:
   level:
