@@ -1,5 +1,6 @@
 package com.alicatadosplasencia.containers_service.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,7 @@ public class RentalRate {
     @NotNull(message = "Container type is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "container_type_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private ContainerType containerType;
 
     @NotNull(message = "Period type is required")
