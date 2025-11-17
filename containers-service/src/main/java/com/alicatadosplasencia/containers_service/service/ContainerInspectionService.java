@@ -2,6 +2,7 @@ package com.alicatadosplasencia.containers_service.service;
 
 import com.alicatadosplasencia.containers_service.model.ContainerInspection;
 import com.alicatadosplasencia.containers_service.repository.ContainerInspectionRepository;
+import com.alicatadosplasencia.containers_service.repository.RentalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,9 @@ public class ContainerInspectionService {
 
     @Autowired
     private ContainerInspectionRepository inspectionRepository;
+
+    @Autowired
+    private RentalRepository rentalRepository;
 
     public List<ContainerInspection> findAll() {
         return inspectionRepository.findAll();
@@ -32,6 +36,16 @@ public class ContainerInspectionService {
 
     @Transactional
     public ContainerInspection save(ContainerInspection inspection) {
+        // Validate that the rental exists
+        if (inspection.getRental() == null || inspection.getRental().getId() == null) {
+            throw new IllegalArgumentException("Rental is required for inspection");
+        }
+
+        // Verify the rental exists in the database
+        if (!rentalRepository.existsById(inspection.getRental().getId())) {
+            throw new IllegalArgumentException("Rental not found with id: " + inspection.getRental().getId());
+        }
+
         if (inspection.getInspectionDate() == null) {
             inspection.setInspectionDate(LocalDateTime.now());
         }
