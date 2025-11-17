@@ -7,3 +7,6 @@ spring:
     config:
       enabled: true
       fail-fast: false
+
+server:
+  port: 8121
