@@ -349,6 +349,7 @@ try {
     $containerIdToUse = if ($createdContainerId) { $createdContainerId } else { 1 }
 
     $body = @{
+        rentalNumber = "RNT-$TIMESTAMP"
         container = @{
             id = $containerIdToUse
         }
