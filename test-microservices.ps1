@@ -40,7 +40,7 @@ function Write-TestResult {
 function Write-UseCaseDescription {
     param([string]$description)
     Write-Host ""
-    Write-Host "   📋 Caso de Uso: $description" -ForegroundColor Magenta
+    Write-Host "   [Caso de Uso] $description" -ForegroundColor Magenta
     Write-Host ""
 }
 
@@ -51,15 +51,15 @@ Write-Host "PRUEBAS SISTEMA ALICATADOS PLASENCIA" -ForegroundColor Yellow
 Write-Host "=========================================" -ForegroundColor Yellow
 Write-Host ""
 Write-Host ""
-Write-Host "Este script prueba el sistema completo de gestión de alquiler de contenedores:" -ForegroundColor Cyan
+Write-Host "Este script prueba el sistema completo de gestion de alquiler de contenedores:" -ForegroundColor Cyan
 Write-Host "  1. Infraestructura y servicios base" -ForegroundColor Gray
-Write-Host "  2. Gestión de tipos y contenedores físicos" -ForegroundColor Gray
+Write-Host "  2. Gestion de tipos y contenedores fisicos" -ForegroundColor Gray
 Write-Host "  3. Tarifas y contratos de alquiler" -ForegroundColor Gray
-Write-Host "  4. Inspecciones post-devolución" -ForegroundColor Gray
-Write-Host "  5. Rutas de transporte logístico" -ForegroundColor Gray
-Write-Host "  6. Facturación de servicios" -ForegroundColor Gray
-Write-Host "  7. Gestión de usuarios del sistema" -ForegroundColor Gray
-Write-Host "  8. Enrutamiento a través del API Gateway" -ForegroundColor Gray
+Write-Host "  4. Inspecciones post-devolucion" -ForegroundColor Gray
+Write-Host "  5. Rutas de transporte logistico" -ForegroundColor Gray
+Write-Host "  6. Facturacion de servicios" -ForegroundColor Gray
+Write-Host "  7. Gestion de usuarios del sistema" -ForegroundColor Gray
+Write-Host "  8. Enrutamiento a traves del API Gateway" -ForegroundColor Gray
 Write-Host "  9. Descubrimiento de servicios con Eureka" -ForegroundColor Gray
 Write-Host ""
 Write-Host "NOTA: Para mejores resultados, ejecute con base de datos limpia" -ForegroundColor Yellow
@@ -86,7 +86,7 @@ try {
 # 1. INFRAESTRUCTURA (7 pruebas)
 # =========================================
 Write-TestHeader "1. INFRAESTRUCTURA (7 pruebas)"
-Write-UseCaseDescription "Verificar que todos los servicios de infraestructura (Eureka, Config Server, Gateway) y microservicios de negocio estén disponibles y respondiendo correctamente"
+Write-UseCaseDescription "Verificar que todos los servicios de infraestructura (Eureka, Config Server, Gateway) y microservicios de negocio esten disponibles y respondiendo correctamente"
 
 # Eureka Server - Health check
 try {
@@ -184,7 +184,7 @@ try {
 # 2. CONTAINERS SERVICE - Tipos (3 pruebas)
 # =========================================
 Write-TestHeader "2. CONTAINERS SERVICE - Tipos (3 pruebas)"
-Write-UseCaseDescription "Gestionar catálogo de tipos de contenedores disponibles (5m3, 10m3, etc.). Consultar todos los tipos, filtrar solo activos, y crear nuevos tipos para el sistema"
+Write-UseCaseDescription "Gestionar catalogo de tipos de contenedores disponibles (5m3, 10m3, etc.). Consultar todos los tipos, filtrar solo activos, y crear nuevos tipos para el sistema"
 
 # Variable para almacenar el ID del tipo creado
 $createdTypeId = $null
@@ -231,7 +231,7 @@ try {
 # 3. CONTAINERS SERVICE - Contenedores (4 pruebas)
 # =========================================
 Write-TestHeader "3. CONTAINERS SERVICE - Contenedores (4 pruebas)"
-Write-UseCaseDescription "Gestionar inventario de contenedores físicos. Consultar todos los contenedores, filtrar por disponibilidad, consultar por estado específico, y registrar nuevos contenedores en el sistema"
+Write-UseCaseDescription "Gestionar inventario de contenedores fisicos. Consultar todos los contenedores, filtrar por disponibilidad, consultar por estado especifico, y registrar nuevos contenedores en el sistema"
 
 # Variable para almacenar el ID del contenedor creado
 $createdContainerId = $null
@@ -409,7 +409,7 @@ try {
 # 6. CONTAINERS SERVICE - Inspecciones (2 pruebas)
 # =========================================
 Write-TestHeader "6. CONTAINERS SERVICE - Inspecciones (2 pruebas)"
-Write-UseCaseDescription "Registrar inspecciones de contenedores al finalizar alquileres. Consultar historial de inspecciones y crear nuevas evaluaciones del estado del contenedor tras su devolución"
+Write-UseCaseDescription "Registrar inspecciones de contenedores al finalizar alquileres. Consultar historial de inspecciones y crear nuevas evaluaciones del estado del contenedor tras su devolucion"
 
 # GET /inspections
 try {
@@ -535,7 +535,7 @@ try {
 # 8. ACCOUNTING SERVICE - Facturas (8 pruebas)
 # =========================================
 Write-TestHeader "8. ACCOUNTING SERVICE - Facturas (8 pruebas)"
-Write-UseCaseDescription "Gestionar facturación de servicios. Consultar facturas, filtrar por estado (pendientes/pagadas/vencidas), buscar por cliente, crear nuevas facturas y actualizar estado de pago"
+Write-UseCaseDescription "Gestionar facturacion de servicios. Consultar facturas, filtrar por estado (pendientes/pagadas/vencidas), buscar por cliente, crear nuevas facturas y actualizar estado de pago"
 
 # GET /invoices
 try {
@@ -623,7 +623,7 @@ try {
 # 9. USERS SERVICE - Usuarios (8 pruebas)
 # =========================================
 Write-TestHeader "9. USERS SERVICE - Usuarios (8 pruebas)"
-Write-UseCaseDescription "Gestionar usuarios del sistema. Consultar usuarios, filtrar por rol (clientes/administradores) y estado (activos/inactivos), crear nuevos usuarios, actualizar información y eliminar usuarios"
+Write-UseCaseDescription "Gestionar usuarios del sistema. Consultar usuarios, filtrar por rol (clientes/administradores) y estado (activos/inactivos), crear nuevos usuarios, actualizar informacion y eliminar usuarios"
 
 # GET /users
 try {
@@ -709,7 +709,7 @@ try {
 # 10. GATEWAY - Enrutamiento (4 pruebas)
 # =========================================
 Write-TestHeader "10. GATEWAY - Enrutamiento (4 pruebas)"
-Write-UseCaseDescription "Verificar que el API Gateway enruta correctamente las peticiones a cada microservicio. Prueba acceso unificado a todos los servicios a través del puerto 8080"
+Write-UseCaseDescription "Verificar que el API Gateway enruta correctamente las peticiones a cada microservicio. Prueba acceso unificado a todos los servicios a traves del puerto 8080"
 
 # Gateway -> Containers
 try {
@@ -760,7 +760,7 @@ try {
 # 11. EUREKA - Registro (5 pruebas)
 # =========================================
 Write-TestHeader "11. EUREKA - Registro (5 pruebas)"
-Write-UseCaseDescription "Verificar que todos los microservicios se han registrado correctamente en Eureka para descubrimiento de servicios. Confirma que el sistema puede localizar dinámicamente cada microservicio"
+Write-UseCaseDescription "Verificar que todos los microservicios se han registrado correctamente en Eureka para descubrimiento de servicios. Confirma que el sistema puede localizar dinamicamente cada microservicio"
 
 # Containers registrado
 try {
