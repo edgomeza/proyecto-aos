@@ -5,9 +5,10 @@ spring:
   application:
     name: accounting-service
   datasource:
-    url: jdbc:mysql://localhost:3306/accounting_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3308/accounting_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: root
     password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
 springdoc:
   api-docs:
