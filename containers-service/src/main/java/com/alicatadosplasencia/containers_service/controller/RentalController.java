@@ -39,6 +39,22 @@ public class RentalController {
         return ResponseEntity.ok(rentalService.findByCustomerId(customerId));
     }
 
+    @GetMapping("/active")
+    @Operation(summary = "Listar alquileres activos")
+    public ResponseEntity<List<Rental>> getActive() {
+        return ResponseEntity.ok(rentalService.findAll().stream()
+                .filter(rental -> rental.getStatus() == Rental.RentalStatus.ACTIVE)
+                .toList());
+    }
+
+    @GetMapping("/pending")
+    @Operation(summary = "Listar alquileres pendientes")
+    public ResponseEntity<List<Rental>> getPending() {
+        return ResponseEntity.ok(rentalService.findAll().stream()
+                .filter(rental -> rental.getStatus() == Rental.RentalStatus.PENDING)
+                .toList());
+    }
+
     @PostMapping
     @Operation(summary = "Crear nuevo alquiler de contenedor")
     public ResponseEntity<Rental> create(@RequestBody Rental rental) {

@@ -38,6 +38,14 @@ public class RentalRateController {
         return ResponseEntity.ok(rentalRateService.findActiveRatesByContainerType(containerTypeId));
     }
 
+    @GetMapping("/active")
+    @Operation(summary = "Listar todas las tarifas activas")
+    public ResponseEntity<List<RentalRate>> getActive() {
+        return ResponseEntity.ok(rentalRateService.findAll().stream()
+                .filter(rate -> rate.getActive() != null && rate.getActive())
+                .toList());
+    }
+
     @PostMapping
     @Operation(summary = "Crear nueva tarifa")
     public ResponseEntity<RentalRate> create(@RequestBody RentalRate rentalRate) {
