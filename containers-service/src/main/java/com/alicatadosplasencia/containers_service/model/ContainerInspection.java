@@ -1,6 +1,7 @@
 package com.alicatadosplasencia.containers_service.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class ContainerInspection {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Rental is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rental_id", nullable = false)
     private Rental rental;
@@ -33,6 +35,7 @@ public class ContainerInspection {
     @Column(name = "inspector_id")
     private Long inspectorId; // Empleado que inspecciona
 
+    @NotNull(message = "Condition status is required")
     @Enumerated(EnumType.STRING)
     @Column(name = "condition_status", nullable = false, length = 20)
     private ConditionStatus conditionStatus;

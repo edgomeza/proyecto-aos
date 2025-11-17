@@ -5,6 +5,7 @@ import com.alicatadosplasencia.accounting_service.model.Invoice.InvoiceStatus;
 import com.alicatadosplasencia.accounting_service.service.InvoiceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,16 +64,15 @@ public class InvoiceController {
 
     @PostMapping
     @Operation(summary = "Crear nueva factura")
-    public ResponseEntity<Invoice> create(@RequestBody Invoice invoice) {
+    public ResponseEntity<Invoice> create(@Valid @RequestBody Invoice invoice) {
         Invoice created = invoiceService.save(invoice);
         return ResponseEntity.status(201).body(created);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar factura")
-    public ResponseEntity<Invoice> update(@PathVariable Long id, @RequestBody Invoice invoice) {
-        invoice.setId(id);
-        Invoice updated = invoiceService.save(invoice);
+    public ResponseEntity<Invoice> update(@PathVariable Long id, @Valid @RequestBody Invoice invoice) {
+        Invoice updated = invoiceService.update(id, invoice);
         return ResponseEntity.ok(updated);
     }
 

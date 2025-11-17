@@ -1,6 +1,8 @@
 package com.alicatadosplasencia.containers_service.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,9 +24,11 @@ public class ContainerType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Container type name is required")
     @Column(nullable = false, length = 100)
     private String name; // Ej: "Contenedor 5m³", "Contenedor 10m³"
 
+    @NotNull(message = "Capacity is required")
     @Column(name = "capacity_m3", nullable = false, precision = 8, scale = 2)
     private BigDecimal capacityM3;
 

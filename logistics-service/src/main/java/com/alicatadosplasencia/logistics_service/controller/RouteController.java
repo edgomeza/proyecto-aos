@@ -5,6 +5,7 @@ import com.alicatadosplasencia.logistics_service.model.Route.RouteStatus;
 import com.alicatadosplasencia.logistics_service.service.RouteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -60,16 +61,15 @@ public class RouteController {
 
     @PostMapping
     @Operation(summary = "Crear nueva ruta")
-    public ResponseEntity<Route> create(@RequestBody Route route) {
+    public ResponseEntity<Route> create(@Valid @RequestBody Route route) {
         Route created = routeService.save(route);
         return ResponseEntity.status(201).body(created);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar ruta")
-    public ResponseEntity<Route> update(@PathVariable Long id, @RequestBody Route route) {
-        route.setId(id);
-        Route updated = routeService.save(route);
+    public ResponseEntity<Route> update(@PathVariable Long id, @Valid @RequestBody Route route) {
+        Route updated = routeService.update(id, route);
         return ResponseEntity.ok(updated);
     }
 

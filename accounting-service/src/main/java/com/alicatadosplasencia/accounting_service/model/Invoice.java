@@ -1,6 +1,8 @@
 package com.alicatadosplasencia.accounting_service.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -12,25 +14,30 @@ public class Invoice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Invoice number is required")
     @Column(nullable = false, unique = true)
     private String invoiceNumber;
 
+    @NotNull(message = "Customer ID is required")
     @Column(nullable = false)
     private Long customerId;
 
     private String customerName;
 
+    @NotNull(message = "Invoice date is required")
     @Column(nullable = false)
     private LocalDate invoiceDate;
 
     private LocalDate dueDate;
 
+    @NotNull(message = "Subtotal is required")
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal subtotal;
 
     @Column(precision = 10, scale = 2)
     private BigDecimal taxAmount;
 
+    @NotNull(message = "Total amount is required")
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal totalAmount;
 

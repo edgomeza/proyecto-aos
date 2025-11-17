@@ -1,6 +1,8 @@
 package com.alicatadosplasencia.containers_service.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,9 +25,11 @@ public class Container {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Container code is required")
     @Column(name = "container_code", unique = true, nullable = false, length = 50)
     private String containerCode; // CONT-001, CONT-002, etc.
 
+    @NotNull(message = "Container type is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "container_type_id", nullable = false)
     private ContainerType containerType;

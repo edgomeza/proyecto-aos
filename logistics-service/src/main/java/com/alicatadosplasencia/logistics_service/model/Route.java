@@ -1,6 +1,8 @@
 package com.alicatadosplasencia.logistics_service.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -12,12 +14,15 @@ public class Route {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Route code is required")
     @Column(nullable = false, unique = true)
     private String routeCode;
 
+    @NotBlank(message = "Origin is required")
     @Column(nullable = false)
     private String origin;
 
+    @NotBlank(message = "Destination is required")
     @Column(nullable = false)
     private String destination;
 
@@ -25,6 +30,7 @@ public class Route {
 
     private Integer estimatedDuration; // minutos
 
+    @NotNull(message = "Schedule date is required")
     @Column(nullable = false)
     private LocalDate scheduleDate;
 
