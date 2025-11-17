@@ -70,6 +70,9 @@ services:
       - "8080:8080"
     networks:
       - alicatados-network
+    environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_URL: http://eureka-server:8761/eureka/
     depends_on:
       config-server:
         condition: service_healthy
@@ -94,6 +97,8 @@ services:
     networks:
       - alicatados-network
     environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_URL: http://eureka-server:8761/eureka/
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/alicatados_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
@@ -123,6 +128,8 @@ services:
     networks:
       - alicatados-network
     environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_URL: http://eureka-server:8761/eureka/
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/alicatados_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
@@ -152,6 +159,8 @@ services:
     networks:
       - alicatados-network
     environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_URL: http://eureka-server:8761/eureka/
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/alicatados_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
@@ -181,6 +190,8 @@ services:
     networks:
       - alicatados-network
     environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_URL: http://eureka-server:8761/eureka/
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/alicatados_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
