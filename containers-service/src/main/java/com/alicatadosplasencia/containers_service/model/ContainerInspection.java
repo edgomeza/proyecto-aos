@@ -1,6 +1,7 @@
 package com.alicatadosplasencia.containers_service.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,7 @@ public class ContainerInspection {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rental_id", nullable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @Schema(description = "Alquiler inspeccionado", implementation = Rental.class)
     private Rental rental;
 
     @Column(name = "inspection_date")

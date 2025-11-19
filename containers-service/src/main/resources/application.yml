@@ -37,12 +37,15 @@ eureka:
 springdoc:
   api-docs:
     path: /v3/api-docs
+    resolve-schema-properties: true
   swagger-ui:
     path: /swagger-ui.html
+    disable-swagger-default-url: true
   default-produces-media-type: application/json
   default-consumes-media-type: application/json
   show-actuator: false
   model-and-view-allowed: true
+  writer-with-default-pretty-printer: true
 
 management:
   endpoints:
