@@ -1,5 +1,7 @@
 package com.alicatadosplasencia.containers_service.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
@@ -48,5 +50,14 @@ public class OpenAPIConfig {
         return new OpenAPI()
                 .info(info)
                 .servers(List.of(localServer, gatewayServer));
+    }
+
+    /**
+     * Configurar ModelResolver con ObjectMapper personalizado
+     * Esto ayuda a OpenAPI a manejar mejor las relaciones LAZY de Hibernate
+     */
+    @Bean
+    public ModelResolver modelResolver(ObjectMapper objectMapper) {
+        return new ModelResolver(objectMapper);
     }
 }
